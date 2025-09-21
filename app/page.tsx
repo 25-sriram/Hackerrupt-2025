@@ -291,6 +291,13 @@ const DomainSection = () => {
       color: "from-orange-600 to-red-600",
       problemStatements: [], // Empty array for "Yet to be Released"
     },
+    {
+      title: "Cybersecurity",
+      description: "Solve Problems related to digital security and data protection",
+      icon: "🛡️",
+      color: "from-orange-600 to-red-600",
+      problemStatements: [], // Empty array for "Yet to be Released"
+    },
   ];
 
   const handleCardClick = (domain) => {
@@ -1534,6 +1541,41 @@ export default function App() {
     },
   },
   plugins: [],
+  <div className="
+    /* --- Mobile styles (Default) --- */
+    fixed bottom-0 inset-x-0 z-20
+    flex flex-row justify-center items-center
+    space-x-8 p-3 bg-black bg-opacity-75 backdrop-blur-sm
+
+    /* --- Desktop styles (Applied at the 'md' breakpoint and up) --- */
+    md:inset-auto md:left-4 md:bottom-4
+    md:flex-col md:space-y-4 md:space-x-0
+    md:p-0 md:bg-transparent md:backdrop-blur-none"
+>
+    {/* This text and divider line are hidden on mobile */}
+    <span className="hidden md:block writing-mode-vertical-rl rotate-180 uppercase text-xs tracking-widest">
+      Follow us on
+    </span>
+    <div className="hidden md:block w-px h-16 bg-green-400"></div>
+
+    {/* Instagram Icon */}
+    <a href="https://www.instagram.com/acesvce?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" className="hover:text-green-300 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+        </svg>
+    </a>
+    
+    {/* LinkedIn Icon */}
+    <a href="https://www.linkedin.com/company/ace-svce/" className="hover:text-green-300 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+            <rect x="2" y="9" width="4" height="12"></rect>
+            <circle cx="4" cy="4" r="2"></circle>
+        </svg>
+    </a>
+</div>
 
             `}</style>
     </div>
