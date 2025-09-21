@@ -1400,10 +1400,7 @@ export default function App() {
         <section ref={sectionRefs.home} className="section-slide">
           <HomeSection />
         </section>
-        {/* social Section */}
-        <section ref={sectionRefs.home} className="section-slide">
-          <SocialLinks />
-        </section>
+        
 
         {/* Prize Pool Section */}
         <section ref={sectionRefs.prizepool} className="section-slide">
@@ -1443,6 +1440,11 @@ export default function App() {
         {/* Gallery Section */}
         <section ref={sectionRefs.gallery} className="section-slide">
           <GallerySection />
+        </section>
+        
+        {/* social Section */}
+        <section ref={sectionRefs.home} className="section-slide">
+          <SocialLinks />
         </section>
 
         {/* Contact Section */}
