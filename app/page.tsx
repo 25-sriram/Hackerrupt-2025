@@ -260,6 +260,87 @@ const ProblemStatementModal = ({ domain, onClose }) => {
     </div>
   );
 };
+function SocialLinks() {
+  return (
+    <div
+      className="
+        /* --- Mobile Styles (Default) --- */
+        fixed bottom-0 inset-x-0 z-50 /* Pinned to bottom, full-width, high z-index */
+        flex flex-row justify-center items-center /* Horizontal layout for icons */
+        space-x-8 p-4 /* Spacing between icons and padding */
+        bg-gray-900 bg-opacity-80 backdrop-blur-sm /* Modern semi-transparent background */
+        text-white /* Sets icon color to white for visibility on dark background */
+
+        /* --- Desktop Styles (Applied at 'md' breakpoint: 768px and up) --- */
+        md:inset-auto md:left-4 md:bottom-4 /* Reposition to bottom-left */
+        md:w-auto md:p-0 /* Reset width and padding */
+        md:flex-col md:space-y-4 md:space-x-0 /* Switch to vertical layout and spacing */
+        md:bg-transparent md:backdrop-blur-none /* Remove mobile background */
+        md:text-current /* Reverts text/icon color to inherit from parent on desktop */
+      "
+    >
+      {/* This text is hidden on mobile and appears on desktop */}
+      <span className="hidden md:block writing-mode-vertical-rl rotate-180 uppercase text-xs tracking-widest mb-4">
+        Follow us on
+      </span>
+      {/* This divider is hidden on mobile and appears on desktop */}
+      <div className="hidden md:block w-px h-16 bg-green-400"></div>
+
+      {/* Instagram Icon Link */}
+      <a
+        href="https://www.instagram.com/acesvce?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Follow us on Instagram"
+        className="hover:text-green-300 transition-colors"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+        </svg>
+      </a>
+
+      {/* LinkedIn Icon Link */}
+      <a
+        href="https://www.linkedin.com/company/ace-svce/"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Follow us on LinkedIn"
+        className="hover:text-green-300 transition-colors"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+          <rect x="2" y="9" width="4" height="12"></rect>
+          <circle cx="4" cy="4" r="2"></circle>
+        </svg>
+      </a>
+    </div>
+  );
+}
+
+
+  
 const DomainSection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDomain, setSelectedDomain] = useState(null);
@@ -1311,20 +1392,17 @@ export default function App() {
         </a>
       </div>
 
-      {/* Wireframe Globe */}
-      <div className="fixed left-4 top-24 z-10 hidden md:block opacity-30">
-        <svg width="80" height="80" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="50" cy="50" r="48" stroke="#05FFa1" strokeWidth="2" />
-          <ellipse cx="50" cy="50" rx="48" ry="15" stroke="#05FFa1" strokeWidth="2" />
-          <ellipse cx="50" cy="50" rx="48" ry="30" stroke="#05FFa1" strokeWidth="2" transform="rotate(90 50 50)" />
-          <ellipse cx="50" cy="50" rx="48" ry="22" stroke="#05FFa1" strokeWidth="1.5" strokeDasharray="4 4" />
-        </svg>
-      </div>
+      
 
       <main className="relative z-10">
+      
         {/* Home Section */}
         <section ref={sectionRefs.home} className="section-slide">
           <HomeSection />
+        </section>
+        {/* social Section */}
+        <section ref={sectionRefs.home} className="section-slide">
+          <SocialLinks />
         </section>
 
         {/* Prize Pool Section */}
@@ -1541,41 +1619,7 @@ export default function App() {
     },
   },
   plugins: [],
-  <div className="
-    /* --- Mobile styles (Default) --- */
-    fixed bottom-0 inset-x-0 z-20
-    flex flex-row justify-center items-center
-    space-x-8 p-3 bg-black bg-opacity-75 backdrop-blur-sm
-
-    /* --- Desktop styles (Applied at the 'md' breakpoint and up) --- */
-    md:inset-auto md:left-4 md:bottom-4
-    md:flex-col md:space-y-4 md:space-x-0
-    md:p-0 md:bg-transparent md:backdrop-blur-none"
->
-    {/* This text and divider line are hidden on mobile */}
-    <span className="hidden md:block writing-mode-vertical-rl rotate-180 uppercase text-xs tracking-widest">
-      Follow us on
-    </span>
-    <div className="hidden md:block w-px h-16 bg-green-400"></div>
-
-    {/* Instagram Icon */}
-    <a href="https://www.instagram.com/acesvce?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" className="hover:text-green-300 transition-colors">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-        </svg>
-    </a>
-    
-    {/* LinkedIn Icon */}
-    <a href="https://www.linkedin.com/company/ace-svce/" className="hover:text-green-300 transition-colors">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
-            <rect x="2" y="9" width="4" height="12"></rect>
-            <circle cx="4" cy="4" r="2"></circle>
-        </svg>
-    </a>
-</div>
+  
 
             `}</style>
     </div>
