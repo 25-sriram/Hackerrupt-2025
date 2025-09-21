@@ -5,7 +5,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 
 // Helper component for the animated mascot
 const Mascot = () => (
-  <div className="relative w-60 h-80 animate-bob flex items-center justify-center">
+  <div className="relative w-80 h-80 animate-bob flex items-center justify-center">
     <img 
       src="/sr.png"   // <-- use the new mascot with transparent background
       alt="Hackerrupt Mascot"
