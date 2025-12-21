@@ -721,7 +721,7 @@ const TeamsSection = () => {
       {
         name: "Hariganesh A",
         role: "Outreach Team Head",
-        image: "/hari.jpeg",
+        image: "/harii.jpeg",
         
       },
       {
