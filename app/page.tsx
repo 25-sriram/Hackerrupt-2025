@@ -721,7 +721,7 @@ const TeamsSection = () => {
       {
         name: "Hariganesh A",
         role: "Outreach Team Head",
-        image: "/hari.png",
+        image: "/hari.jpeg",
         
       },
       {
@@ -756,13 +756,13 @@ const TeamsSection = () => {
       {
         name: "DR.G Janaka Sudha",
         role: "Faculty Coordinator",
-        image: "/janakasudha.png",
+        image: "/js.jpeg",
         
       },
       {
         name: "MR.K Srinivasan",
         role: "Faculty Coordinator",
-        image: "/srinivasan.png",
+        image: "/srini.jpeg",
         
       },
    
