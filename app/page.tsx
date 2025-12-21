@@ -657,7 +657,7 @@ const TeamsSection = () => {
       {
         name: "Aneesh Kumar R",
         role: "Design Team Head",
-        image: "/aneesh.png",
+        image: "/hari.jpeg",
         
       },
       {
