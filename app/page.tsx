@@ -261,12 +261,12 @@ const RegistrationModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () =
           <div className="bg-black/40 border border-yellow-500/50 rounded-lg p-4 mb-4">
             <p className="text-yellow-300 font-semibold mb-2">📋 Important Instructions:</p>
             <ul className="text-gray-300 text-sm space-y-1 list-disc list-inside">
-              <li>Upload all required documents (solution ppt in pdf format, (optional) abstract-maximum of 250 words document, etc.) to Google Drive</li>
-              <li>Save the file as (Problem ID_PPT - Team Name, Example HK01b_PPT - Team_ACE) and (Problem ID_Abstract - Team Name, Example HK01b_Abstract - Team_Coders.</li>
+              <li>Upload all required documents (solution ppt in pdf format, (optional) abstract-maximum of 250 words document, (optional) git repository, etc.) to Google Drive</li>
+              <li>Save the file as (Problem ID_PPT - Team Name, Example HK01b_PPT - Team_ACE) and (Problem ID_Abstract - Team Name, Example HK01b_Abstract - Team_Coders).</li>
               <li>Make sure the folder/file is accessible via link (set sharing permissions)</li>
               <li>Copy the shareable link from Google Drive</li>
               <li>Paste the complete Drive link in the field below</li>
-              <li>Ensure the link is valid and accessible before submitting</li>
+              <li>Ensure the link is valid and accessible-public before submitting</li>
             </ul>
           </div>
           <div className="mb-4">
@@ -1058,8 +1058,8 @@ const TeamsSection = () => {
               key={teamName}
               onClick={() => setSelectedTeam(teamName)}
               className={`px-6 py-3 rounded-lg border transition-all duration-300 ${selectedTeam === teamName
-                  ? "bg-green-600/30 border-green-400 text-green-300"
-                  : "bg-black/40 border-gray-700 text-gray-300 hover:border-green-400 hover:text-green-300"
+                ? "bg-green-600/30 border-green-400 text-green-300"
+                : "bg-black/40 border-gray-700 text-gray-300 hover:border-green-400 hover:text-green-300"
                 }`}
             >
               {teamName}
