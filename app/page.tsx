@@ -2,11 +2,12 @@
 
 import { useEffect, useRef, useState } from "react"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { supabase } from "@/lib/supabaseClient"
 
 // Helper component for the animated mascot
 const Mascot = () => (
   <div className="relative w-96 h-100 animate-bob flex items-center justify-center">
-    <img 
+    <img
       src="/sr.png"   // <-- use the new mascot with transparent background
       alt="Hackerrupt Mascot"
       className="w-full h-full object-contain drop-shadow-[0_0_25px_rgba(34,211,238,0.8)]"
@@ -18,14 +19,12 @@ const Mascot = () => (
 const NavLink = ({ children, onClick, isActive }) => (
   <button
     onClick={onClick}
-    className={`relative px-6 py-2 text-sm font-bold uppercase tracking-wider transition-all duration-300 ${
-      isActive ? "text-green-300 scale-105" : "text-white hover:text-green-300"
-    }`}
+    className={`relative px-6 py-2 text-sm font-bold uppercase tracking-wider transition-all duration-300 ${isActive ? "text-green-300 scale-105" : "text-white hover:text-green-300"
+      }`}
   >
     <div
-      className={`absolute inset-0 bg-black backdrop-blur-sm transition-all duration-300 ${
-        isActive ? "bg-opacity-40" : "bg-opacity-20"
-      }`}
+      className={`absolute inset-0 bg-black backdrop-blur-sm transition-all duration-300 ${isActive ? "bg-opacity-40" : "bg-opacity-20"
+        }`}
       style={{ clipPath: "polygon(10% 0, 100% 0, 90% 100%, 0% 100%)" }}
     ></div>
     <span className="relative">{children}</span>
@@ -35,7 +34,285 @@ const NavLink = ({ children, onClick, isActive }) => (
   </button>
 )
 
-const HomeSection = () => (
+
+const Input = ({
+  name,
+  placeholder,
+  type = "text",
+}: {
+  name: string;
+  placeholder: string;
+  type?: string;
+}) => (
+  <input
+    type={type}
+    name={name}
+    placeholder={placeholder}
+    required
+    className="w-full p-3 bg-black/60 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition-all"
+  />
+);
+
+const Section = ({ title }: { title: string }) => (
+  <h2 className="text-xl font-bold text-green-400 mt-6 mb-4 border-b border-green-400/30 pb-2">{title}</h2>
+);
+
+const RegistrationModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState("");
+  const [totalParticipants, setTotalParticipants] = useState("");
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    setStatus("");
+
+    if (!formRef.current) {
+      setStatus("❌ Form error. Please try again.");
+      setLoading(false);
+      return;
+    }
+
+    const formData = new FormData(formRef.current);
+    const payload = Object.fromEntries(formData.entries());
+
+    // Remove p4 fields if total_participants is 3
+    if (payload.total_participants === "3") {
+      delete payload.p4_name;
+      delete payload.p4_register_number;
+      delete payload.p4_email;
+      delete payload.p4_mobile_number;
+      delete payload.p4_college_name;
+      delete payload.p4_degree;
+      delete payload.p4_branch;
+      delete payload.p4_year_of_study;
+    }
+
+    // Extra safety: prevent empty values
+    const hasEmptyField = Object.values(payload).some(
+      (value) => value === "" || value === null
+    );
+
+    if (hasEmptyField) {
+      setStatus("❌ Please fill in all fields");
+      setLoading(false);
+      return;
+    }
+
+    const { error } = await supabase
+      .from("team_registrations")
+      .insert([payload]);
+
+    if (error) {
+      console.error(error);
+      setStatus("❌ Submission failed");
+    } else {
+      setStatus("✅ Registration successful!");
+      if (formRef.current) {
+        formRef.current.reset();
+      }
+      setTotalParticipants("");
+      setAgreedToTerms(false);
+      setTimeout(() => {
+        onClose();
+        setStatus("");
+      }, 2000);
+    }
+
+    setLoading(false);
+  };
+
+
+
+  if (!isOpen) return null;
+
+  return (
+    <div
+      className="fixed inset-0 bg-black bg-opacity-80 backdrop-blur-sm flex justify-center items-center z-50 p-4"
+      onClick={onClose}
+    >
+      <div
+        className="bg-gray-900 border border-green-500/50 rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="sticky top-0 bg-gray-900 border-b border-green-500/50 p-6 flex justify-between items-center z-10">
+          <h1 className="font-pixel text-2xl md:text-3xl text-green-400">
+            Hackathon Team Registration
+          </h1>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-white text-3xl font-bold transition-colors"
+          >
+            &times;
+          </button>
+        </div>
+
+        <form ref={formRef} onSubmit={handleSubmit} className="p-6 space-y-4">
+          {/* Team Info */}
+          <Section title="Team Information" />
+          <div className="grid md:grid-cols-2 gap-4">
+            <Input name="team_email" placeholder="Team Email" type="email" />
+            <Input name="team_name" placeholder="Team Name" />
+            <select
+              name="total_participants"
+              required
+              value={totalParticipants}
+              onChange={(e) => setTotalParticipants(e.target.value)}
+              className="w-full p-3 bg-black/60 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition-all"
+            >
+              <option value="">Total Participants</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+            </select>
+          </div>
+
+          {/* Participant 1 */}
+          <Section title="Participant 1 (Team Leader)" />
+          <div className="grid md:grid-cols-2 gap-4">
+            <Input name="p1_name" placeholder="Full Name" />
+            <Input name="p1_register_number" placeholder="Register Number" />
+            <Input name="p1_email" placeholder="Email" type="email" />
+            <Input name="p1_mobile_number" placeholder="Mobile Number" />
+            <Input name="p1_college_name" placeholder="College Name" />
+            <select
+              name="p1_degree"
+              required
+              className="w-full p-3 bg-black/60 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition-all"
+            >
+              <option value="">Degree</option>
+              <option value="B.E">B.E</option>
+              <option value="B.Tech">B.Tech</option>
+            </select>
+            <Input name="p1_branch" placeholder="Branch" />
+            <Input name="p1_year_of_study" placeholder="Year of Study" />
+          </div>
+
+          {/* Participant 2 */}
+          <Section title="Participant 2" />
+          <div className="grid md:grid-cols-2 gap-4">
+            <Input name="p2_name" placeholder="Full Name" />
+            <Input name="p2_register_number" placeholder="Register Number" />
+            <Input name="p2_email" placeholder="Email" type="email" />
+            <Input name="p2_mobile_number" placeholder="Mobile Number" />
+            <Input name="p2_college_name" placeholder="College Name" />
+            <select
+              name="p2_degree"
+              required
+              className="w-full p-3 bg-black/60 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition-all"
+            >
+              <option value="">Degree</option>
+              <option value="B.E">B.E</option>
+              <option value="B.Tech">B.Tech</option>
+            </select>
+            <Input name="p2_branch" placeholder="Branch" />
+            <Input name="p2_year_of_study" placeholder="Year of Study" />
+          </div>
+
+          {/* Participant 3 */}
+          <Section title="Participant 3" />
+          <div className="grid md:grid-cols-2 gap-4">
+            <Input name="p3_name" placeholder="Full Name" />
+            <Input name="p3_register_number" placeholder="Register Number" />
+            <Input name="p3_email" placeholder="Email" type="email" />
+            <Input name="p3_mobile_number" placeholder="Mobile Number" />
+            <Input name="p3_college_name" placeholder="College Name" />
+            <select
+              name="p3_degree"
+              required
+              className="w-full p-3 bg-black/60 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition-all"
+            >
+              <option value="">Degree</option>
+              <option value="B.E">B.E</option>
+              <option value="B.Tech">B.Tech</option>
+            </select>
+            <Input name="p3_branch" placeholder="Branch" />
+            <Input name="p3_year_of_study" placeholder="Year of Study" />
+          </div>
+
+          {/* Participant 4 - Only show if total_participants is 4 */}
+          {totalParticipants === "4" && (
+            <>
+              <Section title="Participant 4" />
+              <div className="grid md:grid-cols-2 gap-4">
+                <Input name="p4_name" placeholder="Full Name" />
+                <Input name="p4_register_number" placeholder="Register Number" />
+                <Input name="p4_email" placeholder="Email" type="email" />
+                <Input name="p4_mobile_number" placeholder="Mobile Number" />
+                <Input name="p4_college_name" placeholder="College Name" />
+                <select
+                  name="p4_degree"
+                  required
+                  className="w-full p-3 bg-black/60 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition-all"
+                >
+                  <option value="">Degree</option>
+                  <option value="B.E">B.E</option>
+                  <option value="B.Tech">B.Tech</option>
+                </select>
+                <Input name="p4_branch" placeholder="Branch" />
+                <Input name="p4_year_of_study" placeholder="Year of Study" />
+              </div>
+            </>
+          )}
+
+          {/* Drive Link Section */}
+          <Section title="Drive Link Submission" />
+          <div className="bg-black/40 border border-yellow-500/50 rounded-lg p-4 mb-4">
+            <p className="text-yellow-300 font-semibold mb-2">📋 Important Instructions:</p>
+            <ul className="text-gray-300 text-sm space-y-1 list-disc list-inside">
+              <li>Upload all required documents (solution ppt in pdf format, (optional) abstract-maximum of 250 words document, etc.) to Google Drive</li>
+              <li>Save the file as (Problem ID_PPT - Team Name, Example HK01b_PPT - Team_ACE) and (Problem ID_Abstract - Team Name, Example HK01b_Abstract - Team_Coders.</li>
+              <li>Make sure the folder/file is accessible via link (set sharing permissions)</li>
+              <li>Copy the shareable link from Google Drive</li>
+              <li>Paste the complete Drive link in the field below</li>
+              <li>Ensure the link is valid and accessible before submitting</li>
+            </ul>
+          </div>
+          <div className="mb-4">
+            <Input
+              name="drive_link"
+              placeholder="https://drive.google.com/..."
+              type="url"
+            />
+          </div>
+
+          {/* Terms and Conditions Checkbox */}
+          <div className="flex items-start space-x-3 mb-6 p-4 bg-black/40 border border-gray-700 rounded-lg">
+            <input
+              type="checkbox"
+              id="terms-checkbox"
+              checked={agreedToTerms}
+              onChange={(e) => setAgreedToTerms(e.target.checked)}
+              className="mt-1 w-5 h-5 text-green-400 bg-black/60 border-gray-700 rounded focus:ring-2 focus:ring-green-400 focus:ring-offset-0 cursor-pointer"
+              required
+            />
+            <label htmlFor="terms-checkbox" className="text-gray-300 text-sm cursor-pointer">
+              I confirm that I have read and understood the instructions above. I have verified that my Drive link is accessible and contains all required documents. I agree to proceed with the registration.
+            </label>
+          </div>
+
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={loading || !agreedToTerms}
+            className="w-full mt-6 bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 rounded-lg font-semibold hover:scale-105 transition-transform duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+          >
+            {loading ? "Submitting..." : "Submit Registration"}
+          </button>
+
+          {status && (
+            <p className={`text-center font-medium mt-2 ${status.includes("✅") ? "text-green-400" : "text-red-400"}`}>
+              {status}
+            </p>
+          )}
+        </form>
+      </div>
+    </div>
+  );
+};
+
+const HomeSection = ({ onRegisterClick }: { onRegisterClick: () => void }) => (
   <div className="min-h-screen flex flex-col items-center justify-center text-center px-3 sm:px-4 py-10">
     <Mascot />
 
@@ -62,14 +339,12 @@ const HomeSection = () => (
 
     {/* Button */}
     <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 w-full sm:w-auto">
-      <a
-        href="/comingsoon.pdf"
-        target="_blank"
-        rel="noopener noreferrer"
+      <button
+        onClick={onRegisterClick}
         className="hack-button w-full sm:w-auto px-6 py-3 rounded-xl text-base sm:text-lg font-semibold bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md hover:scale-105 transition-transform duration-300"
       >
         Register Now
-      </a>
+      </button>
     </div>
   </div>
 );
@@ -122,11 +397,11 @@ const AboutSection = () => (
         {/* Left side text */}
         <div className="space-y-6 animate-slide-in-left">
           <p className="text-lg text-gray-300 leading-relaxed">
-            HACKERRUPT is more than just a hackathon - it's a revolution in problem-solving. 
+            HACKERRUPT is more than just a hackathon - it's a revolution in problem-solving.
             We bring together the brightest minds to transform bugs into breakthrough innovations.
           </p>
           <p className="text-lg text-gray-300 leading-relaxed">
-            Join us for 24 hours of intense coding, creative thinking, and collaborative building 
+            Join us for 24 hours of intense coding, creative thinking, and collaborative building
             as we tackle real-world challenges with cutting-edge technology.
           </p>
           <div className="flex flex-wrap gap-4 justify-center md:justify-start">
@@ -168,13 +443,13 @@ const domains = [
     icon: "🤖",
     color: "from-purple-600 to-pink-600",
     problemStatements: [
-      { 
-        title: "PS-001: Customer Churn Prediction", 
-        description: "Develop a model to predict which customers are most likely to stop using a service, allowing the business to proactively offer incentives." 
+      {
+        title: "PS-001: Customer Churn Prediction",
+        description: "Develop a model to predict which customers are most likely to stop using a service, allowing the business to proactively offer incentives."
       },
-      { 
-        title: "PS-002: Real-time Object Detection", 
-        description: "Create a system that can identify and track objects in a live video stream for security or autonomous navigation purposes." 
+      {
+        title: "PS-002: Real-time Object Detection",
+        description: "Create a system that can identify and track objects in a live video stream for security or autonomous navigation purposes."
       },
     ],
   },
@@ -184,9 +459,9 @@ const domains = [
     icon: "⛓️",
     color: "from-blue-600 to-cyan-600",
     problemStatements: [
-       { 
-        title: "PS-003: Decentralized Voting System", 
-        description: "Build a secure and transparent voting application on the blockchain to prevent fraud and ensure verifiable results." 
+      {
+        title: "PS-003: Decentralized Voting System",
+        description: "Build a secure and transparent voting application on the blockchain to prevent fraud and ensure verifiable results."
       },
     ],
   },
@@ -211,12 +486,12 @@ const ProblemStatementModal = ({ domain, onClose }) => {
 
   return (
     // Modal Backdrop
-    <div 
+    <div
       className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50"
       onClick={onClose} // Close modal if backdrop is clicked
     >
       {/* Modal Content */}
-      <div 
+      <div
         className="bg-gray-800 text-white rounded-lg shadow-xl w-11/12 md:w-3/4 lg:w-1/2 max-h-[80vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside the modal
       >
@@ -236,8 +511,8 @@ const ProblemStatementModal = ({ domain, onClose }) => {
               <tbody>
                 {domain.problemStatements.map((ps, index) => (
                   <>
-                    <tr 
-                      key={ps.title} 
+                    <tr
+                      key={ps.title}
                       className="cursor-pointer hover:bg-gray-700 border-b border-gray-700"
                       onClick={() => handleProblemClick(index)}
                     >
@@ -340,7 +615,7 @@ function SocialLinks() {
 }
 
 
-  
+
 const DomainSection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDomain, setSelectedDomain] = useState(null);
@@ -362,7 +637,7 @@ const DomainSection = () => {
       icon: "⛓️",
       color: "from-blue-600 to-cyan-600",
       problemStatements: [
-         { title: "PS-003: Yet to be released", description: "Yet to be released" },
+        { title: "PS-003: Yet to be released", description: "Yet to be released" },
       ],
     },
     {
@@ -507,52 +782,52 @@ const TeamsSection = () => {
         name: "Mithun S",
         role: "President",
         image: "/mithun.png",
-        
+
       },
       {
         name: "Kiran M S",
         role: "Vice President",
         image: "/kiran.png",
-        
+
       },
       {
         name: "Srinidhi S",
         role: "Vice President",
         image: "/srinidhi.png",
-        
+
       },
       {
         name: "Harsh S",
         role: "Vice President",
         image: "/harsh.png",
-        
+
       },
       {
         name: "Jai Krishna Prasath D",
         role: "Secretary",
         image: "/jai.png",
-       
+
       },
 
       {
         name: "Sarvesh Raghav B",
         role: "Operations Head",
         image: "/raghav1.png",
-       
+
       },
 
       {
         name: "Ashika Haseen S",
         role: "Treasurer",
         image: "/ashika.png",
-       
+
       },
 
       {
         name: "Nirrmal G",
         role: "Joint Secretary",
         image: "/nirrms.png",
-       
+
       },
     ],
     "Executive Team": [
@@ -560,78 +835,78 @@ const TeamsSection = () => {
         name: "Johan A",
         role: "Executive Associative",
         image: "/johan.png",
-        
+
       },
-     {
-        name: "Aravinth T",
+      {
+        name: "Aravintth T",
         role: "Executive Associative",
-        image: "/aravinth.png",
-        
+        image: "/aravintth.jpeg",
+
       },
-     {
+      {
         name: "Shrinithi Dasarathy",
         role: "Executive Associative",
         image: "/shrinithi.png",
-        
+
       },
 
-     {
+      {
         name: "Kavya K P",
         role: "Executive Associative",
         image: "/kavya.png",
-        
+
       },
-     {
+      {
         name: "Mirthun K S",
         role: "Executive Member",
         image: "/mirthun.png",
-        
+
       },
-     {
+      {
         name: "Shree Kowsik S B",
         role: "Executive Member",
         image: "/kowsik.png",
-        
+
       },
 
-     {
+      {
         name: "Salai B Dharshini",
         role: "Executive Member",
         image: "/salai.png",
-        
+
       },
 
-     {
+      {
         name: "C Dhinesh",
         role: "Executive Member",
         image: "/dhinesh.png",
-        
+
       },
 
       {
         name: "Alagu Manikandan",
         role: "Executive Member",
         image: "/am.png",
-        
+
       },
-     {
+      {
         name: "Rethinagiri S",
         role: "Executive Member",
         image: "/rethinagiri.png",
-        
+
       },
-    
+
       {
         name: "Arpitha Paraneetharan",
         role: "Executive Member",
         image: "/arpritha.png",
-        
+
       },
       {
         name: "Kesava Navya",
         role: "Executive Member",
         image: "/kesava.png",
-        
+
       },
     ],
 
@@ -653,94 +928,94 @@ const TeamsSection = () => {
       },
     ],
 
-        "Design Team": [
+    "Design Team": [
       {
         name: "Aneesh Kumar R",
         role: "Design Team Head",
         image: "/hari.jpeg",
-        
+
       },
       {
         name: "Nantha Kishore S",
         role: "Design Team Member",
         image: "/nantha.png",
-        
+
       },
       {
         name: "Kanisha S",
         role: "Design Team Head",
         image: "/kanisha.png",
-        
+
       },
       {
         name: "Rajeshwari B C",
         role: "Design Team Member",
         image: "/raje.png",
-        
+
       },
       {
         name: "Kavinithi R P",
         role: "Design Team Member",
         image: "/kavinithi.png",
-        
+
       },
     ],
-      "Content Team": [
+    "Content Team": [
       {
         name: "Sadhana S",
         role: "Content Team Head",
         image: "/sadhana.png",
-        
+
       },
       {
         name: "Mona Shree",
         role: "Content Team Member",
         image: "/mona.png",
-        
+
       },
       {
         name: "Vaishnavi Chitraa M",
         role: "Content Team Member",
         image: "/vaishnavi.png",
-        
+
       },
       {
         name: "Tharun Kumar T",
         role: "Content Team Member",
         image: "/tk.png",
-        
+
       },
     ],
-        "Marketting And Outreach Team": [
+    "Marketting And Outreach Team": [
       {
         name: "Shashank N S",
         role: "Marketting Team Head",
         image: "/shashank.png",
-        
+
       },
       {
         name: "Hariganesh A",
         role: "Outreach Team Head",
         image: "/harii.jpeg",
-        
+
       },
       {
         name: "Priyanka A",
         role: "Marketting Team Member",
         image: "/priyanka.png",
-        
+
       },
       {
         name: "Sharmila M",
         role: "Marketting Team Member",
         image: "/sharmila.png",
-        
+
       },
       {
         name: "Bhavana G",
         role: "Marketting Team Member",
         image: "/bhavana.png",
-        
+
       },
     ],
     "Photography Team": [
@@ -748,24 +1023,24 @@ const TeamsSection = () => {
         name: "V Raghav",
         role: "Photography Team Member",
         image: "/raghav.png",
-        
+
       },
     ],
-          
+
     "Faculty Co-ordinator": [
       {
         name: "DR.G Janaka Sudha",
         role: "Faculty Coordinator",
         image: "/js.jpeg",
-        
+
       },
       {
         name: "MR.K Srinivasan",
         role: "Faculty Coordinator",
         image: "/srini.jpeg",
-        
+
       },
-   
+
     ],
   }
 
@@ -782,11 +1057,10 @@ const TeamsSection = () => {
             <button
               key={teamName}
               onClick={() => setSelectedTeam(teamName)}
-              className={`px-6 py-3 rounded-lg border transition-all duration-300 ${
-                selectedTeam === teamName
+              className={`px-6 py-3 rounded-lg border transition-all duration-300 ${selectedTeam === teamName
                   ? "bg-green-600/30 border-green-400 text-green-300"
                   : "bg-black/40 border-gray-700 text-gray-300 hover:border-green-400 hover:text-green-300"
-              }`}
+                }`}
             >
               {teamName}
             </button>
@@ -1021,9 +1295,8 @@ const GallerySection = () => {
               key={i}
               onClick={() => setCurrentIndex(i)}
               aria-label={`Go to slide ${i + 1}`}
-              className={`h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full transition ${
-                currentIndex === i ? "bg-green-400" : "bg-gray-600 hover:bg-gray-500"
-              }`}
+              className={`h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full transition ${currentIndex === i ? "bg-green-400" : "bg-gray-600 hover:bg-gray-500"
+                }`}
             />
           ))}
         </div>
@@ -1035,7 +1308,7 @@ const ContactSection = () => {
   return (
     <footer className="bg-black text-gray-300 py-12 border-t border-gray-700">
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12">
-        
+
         {/* Column 1: Branding */}
         <div className="pl-6 md:pl-12">
           <h2 className="text-2xl font-bold bg-gradient-to-r from-green-400 to-purple-500 bg-clip-text text-transparent">
@@ -1044,42 +1317,42 @@ const ContactSection = () => {
           <p className="mt-2">International Hackathon</p>
 
           {/* Contact Us section */}
-  <div className="mt-4 text-gray-300">
-    <h3 className="text-lg font-semibold text-green-400 flex items-center space-x-2">
-      <i className="bi bi-telephone-fill"></i>
-      <span>Contact Us</span>
-    </h3>
+          <div className="mt-4 text-gray-300">
+            <h3 className="text-lg font-semibold text-green-400 flex items-center space-x-2">
+              <i className="bi bi-telephone-fill"></i>
+              <span>Contact Us</span>
+            </h3>
 
-    <div className="mt-3 space-y-4">
-      {/* Contact 1 */}
-      <div>
-        <p className="flex items-center space-x-2">
-          <i className="bi bi-person-fill text-purple-400"></i>
-          <span className="font-medium">Mithun S</span>
-        </p>
-        <p className="flex items-center space-x-2 ml-6 mt-1">
-          <i className="bi bi-telephone text-green-400"></i>
-          <a href="tel:+917010341676" className="hover:text-green-400">
-            +91 70103 41676
-          </a>
-        </p>
-      </div>
+            <div className="mt-3 space-y-4">
+              {/* Contact 1 */}
+              <div>
+                <p className="flex items-center space-x-2">
+                  <i className="bi bi-person-fill text-purple-400"></i>
+                  <span className="font-medium">Mithun S</span>
+                </p>
+                <p className="flex items-center space-x-2 ml-6 mt-1">
+                  <i className="bi bi-telephone text-green-400"></i>
+                  <a href="tel:+917010341676" className="hover:text-green-400">
+                    +91 70103 41676
+                  </a>
+                </p>
+              </div>
 
-      {/* Contact 2 */}
-      <div>
-        <p className="flex items-center space-x-2">
-          <i className="bi bi-person-fill text-purple-400"></i>
-          <span className="font-medium">Kiran M S</span>
-        </p>
-        <p className="flex items-center space-x-2 ml-6 mt-1">
-          <i className="bi bi-telephone text-green-400"></i>
-          <a href="tel:+918825594439" className="hover:text-green-400">
-            +91 88255 94439
-          </a>
-        </p>
-      </div>
-    </div>
-  </div>
+              {/* Contact 2 */}
+              <div>
+                <p className="flex items-center space-x-2">
+                  <i className="bi bi-person-fill text-purple-400"></i>
+                  <span className="font-medium">Kiran M S</span>
+                </p>
+                <p className="flex items-center space-x-2 ml-6 mt-1">
+                  <i className="bi bi-telephone text-green-400"></i>
+                  <a href="tel:+918825594439" className="hover:text-green-400">
+                    +91 88255 94439
+                  </a>
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Column 2: Venue */}
@@ -1133,6 +1406,7 @@ export default function App() {
   const canvasRef = useRef(null)
   const [activeSection, setActiveSection] = useState("home")
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isRegistrationModalOpen, setIsRegistrationModalOpen] = useState(false);
 
   const sectionRefs = {
     home: useRef(null),
@@ -1173,127 +1447,127 @@ export default function App() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-   useEffect(() => {
-        const canvas = canvasRef.current;
-        const ctx = canvas.getContext('2d');
-        let width, height, particles, animationFrameId;
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    let width, height, particles, animationFrameId;
 
-        const mouse = {
-            x: null,
-            y: null,
-            radius: 150
-        };
+    const mouse = {
+      x: null,
+      y: null,
+      radius: 150
+    };
 
-        const handleMouseMove = (event) => {
-            mouse.x = event.clientX;
-            mouse.y = event.clientY;
-        };
-        
-        const handleMouseOut = () => {
-            mouse.x = null;
-            mouse.y = null;
-        };
+    const handleMouseMove = (event) => {
+      mouse.x = event.clientX;
+      mouse.y = event.clientY;
+    };
 
-        window.addEventListener('mousemove', handleMouseMove);
-        window.addEventListener('mouseout', handleMouseOut);
+    const handleMouseOut = () => {
+      mouse.x = null;
+      mouse.y = null;
+    };
 
-        class Particle {
-            constructor(x, y, directionX, directionY, size, color) {
-                this.x = x;
-                this.y = y;
-                this.directionX = directionX;
-                this.directionY = directionY;
-                this.size = size;
-                this.color = color;
-                this.baseAlpha = 0.2 + Math.random() * 0.4;
-                this.pulseSpeed = Math.random() * 0.02 + 0.005;
-                this.pulseOffset = Math.random() * Math.PI * 2;
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseout', handleMouseOut);
+
+    class Particle {
+      constructor(x, y, directionX, directionY, size, color) {
+        this.x = x;
+        this.y = y;
+        this.directionX = directionX;
+        this.directionY = directionY;
+        this.size = size;
+        this.color = color;
+        this.baseAlpha = 0.2 + Math.random() * 0.4;
+        this.pulseSpeed = Math.random() * 0.02 + 0.005;
+        this.pulseOffset = Math.random() * Math.PI * 2;
+      }
+      draw() {
+        const pulseAlpha = this.baseAlpha + Math.sin(Date.now() * this.pulseSpeed + this.pulseOffset) * (this.baseAlpha * 0.5);
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+        ctx.fillStyle = `rgba(5, 255, 161, ${pulseAlpha})`;
+        ctx.fill();
+      }
+      update() {
+        if (this.x > width || this.x < 0) this.directionX = -this.directionX;
+        if (this.y > height || this.y < 0) this.directionY = -this.directionY;
+
+        this.x += this.directionX;
+        this.y += this.directionY;
+        this.draw();
+      }
+    }
+
+    const init = () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+      particles = [];
+      const numberOfParticles = Math.floor((width * height) / 9000);
+      for (let i = 0; i < numberOfParticles; i++) {
+        const size = Math.random() * 2 + 1;
+        const x = Math.random() * (width - size * 2) + size;
+        const y = Math.random() * (height - size * 2) + size;
+        const directionX = (Math.random() - 0.5) * 0.6;
+        const directionY = (Math.random() - 0.5) * 0.6;
+        const color = '#05FFa1';
+        particles.push(new Particle(x, y, directionX, directionY, size, color));
+      }
+    };
+
+    const connect = () => {
+      let opacityValue = 1;
+      for (let a = 0; a < particles.length; a++) {
+        for (let b = a; b < particles.length; b++) {
+          const distance = ((particles[a].x - particles[b].x) * (particles[a].x - particles[b].x))
+            + ((particles[a].y - particles[b].y) * (particles[a].y - particles[b].y));
+          if (distance < (width / 7) * (height / 7)) {
+            opacityValue = 1 - (distance / 20000);
+            let dx = mouse.x - particles[a].x;
+            let dy = mouse.y - particles[a].y;
+            let mouseDistance = Math.sqrt(dx * dx + dy * dy);
+            if (mouseDistance < mouse.radius) {
+              ctx.strokeStyle = `rgba(173, 216, 230, ${opacityValue * (1 - mouseDistance / mouse.radius) * 1.5})`;
+              ctx.lineWidth = 1.2;
+            } else {
+              ctx.strokeStyle = `rgba(5, 255, 161, ${opacityValue * 0.5})`;
+              ctx.lineWidth = 0.5;
             }
-            draw() {
-                const pulseAlpha = this.baseAlpha + Math.sin(Date.now() * this.pulseSpeed + this.pulseOffset) * (this.baseAlpha * 0.5);
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
-                ctx.fillStyle = `rgba(5, 255, 161, ${pulseAlpha})`;
-                ctx.fill();
-            }
-            update() {
-                if (this.x > width || this.x < 0) this.directionX = -this.directionX;
-                if (this.y > height || this.y < 0) this.directionY = -this.directionY;
-
-                this.x += this.directionX;
-                this.y += this.directionY;
-                this.draw();
-            }
+            ctx.beginPath();
+            ctx.moveTo(particles[a].x, particles[a].y);
+            ctx.lineTo(particles[b].x, particles[b].y);
+            ctx.stroke();
+          }
         }
+      }
+    };
 
-        const init = () => {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-            particles = [];
-            const numberOfParticles = Math.floor((width * height) / 9000);
-            for (let i = 0; i < numberOfParticles; i++) {
-                const size = Math.random() * 2 + 1;
-                const x = Math.random() * (width - size * 2) + size;
-                const y = Math.random() * (height - size * 2) + size;
-                const directionX = (Math.random() - 0.5) * 0.6;
-                const directionY = (Math.random() - 0.5) * 0.6;
-                const color = '#05FFa1';
-                particles.push(new Particle(x, y, directionX, directionY, size, color));
-            }
-        };
+    const animate = () => {
+      ctx.clearRect(0, 0, width, height);
+      particles.forEach(p => p.update());
+      connect();
+      animationFrameId = requestAnimationFrame(animate);
+    };
 
-        const connect = () => {
-            let opacityValue = 1;
-            for (let a = 0; a < particles.length; a++) {
-                for (let b = a; b < particles.length; b++) {
-                    const distance = ((particles[a].x - particles[b].x) * (particles[a].x - particles[b].x))
-                                   + ((particles[a].y - particles[b].y) * (particles[a].y - particles[b].y));
-                    if (distance < (width / 7) * (height / 7)) {
-                        opacityValue = 1 - (distance / 20000);
-                        let dx = mouse.x - particles[a].x;
-                        let dy = mouse.y - particles[a].y;
-                        let mouseDistance = Math.sqrt(dx*dx + dy*dy);
-                        if(mouseDistance < mouse.radius) {
-                             ctx.strokeStyle = `rgba(173, 216, 230, ${opacityValue * (1 - mouseDistance/mouse.radius) * 1.5})`;
-                             ctx.lineWidth = 1.2;
-                        } else {
-                             ctx.strokeStyle = `rgba(5, 255, 161, ${opacityValue * 0.5})`;
-                             ctx.lineWidth = 0.5;
-                        }
-                        ctx.beginPath();
-                        ctx.moveTo(particles[a].x, particles[a].y);
-                        ctx.lineTo(particles[b].x, particles[b].y);
-                        ctx.stroke();
-                    }
-                }
-            }
-        };
+    const handleResize = () => {
+      cancelAnimationFrame(animationFrameId);
+      init();
+      animate();
+    };
 
-        const animate = () => {
-            ctx.clearRect(0, 0, width, height);
-            particles.forEach(p => p.update());
-            connect();
-            animationFrameId = requestAnimationFrame(animate);
-        };
+    window.addEventListener('resize', handleResize);
 
-        const handleResize = () => {
-            cancelAnimationFrame(animationFrameId);
-            init();
-            animate();
-        };
-        
-        window.addEventListener('resize', handleResize);
-        
-        init();
-        animate();
+    init();
+    animate();
 
-        return () => {
-            window.removeEventListener('resize', handleResize);
-            window.removeEventListener('mousemove', handleMouseMove);
-            window.removeEventListener('mouseout', handleMouseOut);
-            cancelAnimationFrame(animationFrameId);
-        };
-    }, []);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseout', handleMouseOut);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
   return (
     <div className="bg-black min-h-screen text-white font-sans overflow-hidden relative">
       {/* Background Canvas */}
@@ -1302,54 +1576,60 @@ export default function App() {
       {/* Background Gradient */}
       <div className="fixed top-0 left-0 w-full h-1/2 bg-gradient-to-b from-green-900/50 to-transparent z-0"></div>
 
-{/* Header */}
-<header className="fixed top-0 left-0 w-full p-4 z-20 backdrop-blur-md">
-  <div className="container mx-auto flex justify-between items-center bg-black/20 backdrop-blur-sm border-t-2 border-green-400 py-2 px-4">
+      {/* Registration Modal */}
+      <RegistrationModal
+        isOpen={isRegistrationModalOpen}
+        onClose={() => setIsRegistrationModalOpen(false)}
+      />
 
-    {/* Logo */}
-    <div className="text-lg font-bold text-green-400">Hackerrupt'25</div>
+      {/* Header */}
+      <header className="fixed top-0 left-0 w-full p-4 z-20 backdrop-blur-md">
+        <div className="container mx-auto flex justify-between items-center bg-black/20 backdrop-blur-sm border-t-2 border-green-400 py-2 px-4">
 
-    {/* Desktop Navigation */}
-    <nav className="hidden md:flex items-center space-x-4 text-sm sm:text-base">
-      <NavLink onClick={() => scrollToSection("home")} isActive={activeSection === "home"}>Home</NavLink>
-      <NavLink onClick={() => scrollToSection("prizepool")} isActive={activeSection === "prizepool"}>Prize Pool</NavLink>
-      <NavLink onClick={() => scrollToSection("about")} isActive={activeSection === "about"}>About</NavLink>
-      <NavLink onClick={() => scrollToSection("domains")} isActive={activeSection === "domains"}>Domains</NavLink>
-      <NavLink onClick={() => scrollToSection("timeline")} isActive={activeSection === "timeline"}>Timeline</NavLink>
-      <NavLink onClick={() => scrollToSection("teams")} isActive={activeSection === "teams"}>Team</NavLink>
-      <NavLink onClick={() => scrollToSection("sponsors")} isActive={activeSection === "sponsors"}>Sponsors</NavLink>
-      <NavLink onClick={() => scrollToSection("faq")} isActive={activeSection === "faq"}>FAQ</NavLink>
-      <NavLink onClick={() => scrollToSection("gallery")} isActive={activeSection === "gallery"}>Gallery</NavLink>
-      <NavLink onClick={() => scrollToSection("contact")} isActive={activeSection === "contact"}>Contact Us</NavLink>
-    </nav>
+          {/* Logo */}
+          <div className="text-lg font-bold text-green-400">Hackerrupt'25</div>
 
-    {/* Mobile Toggle Button */}
-    <button
-      className="md:hidden flex flex-col space-y-1.5 focus:outline-none"
-      onClick={() => setMenuOpen(!menuOpen)}
-    >
-      <span className="block w-6 h-0.5 bg-green-400"></span>
-      <span className="block w-6 h-0.5 bg-green-400"></span>
-      <span className="block w-6 h-0.5 bg-green-400"></span>
-    </button>
-  </div>
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-4 text-sm sm:text-base">
+            <NavLink onClick={() => scrollToSection("home")} isActive={activeSection === "home"}>Home</NavLink>
+            <NavLink onClick={() => scrollToSection("prizepool")} isActive={activeSection === "prizepool"}>Prize Pool</NavLink>
+            <NavLink onClick={() => scrollToSection("about")} isActive={activeSection === "about"}>About</NavLink>
+            <NavLink onClick={() => scrollToSection("domains")} isActive={activeSection === "domains"}>Domains</NavLink>
+            <NavLink onClick={() => scrollToSection("timeline")} isActive={activeSection === "timeline"}>Timeline</NavLink>
+            <NavLink onClick={() => scrollToSection("teams")} isActive={activeSection === "teams"}>Team</NavLink>
+            <NavLink onClick={() => scrollToSection("sponsors")} isActive={activeSection === "sponsors"}>Sponsors</NavLink>
+            <NavLink onClick={() => scrollToSection("faq")} isActive={activeSection === "faq"}>FAQ</NavLink>
+            <NavLink onClick={() => scrollToSection("gallery")} isActive={activeSection === "gallery"}>Gallery</NavLink>
+            <NavLink onClick={() => scrollToSection("contact")} isActive={activeSection === "contact"}>Contact Us</NavLink>
+          </nav>
 
-  {/* Mobile Dropdown Menu */}
-  {menuOpen && (
-    <div className="md:hidden bg-black/95 border-t border-green-400 flex flex-col items-center py-6 space-y-4">
-      <NavLink onClick={() => { scrollToSection("home"); setMenuOpen(false); }} isActive={activeSection === "home"}>Home</NavLink>
-      <NavLink onClick={() => scrollToSection("prizepool")} isActive={activeSection === "prizepool"}>Prize Pool</NavLink>
-      <NavLink onClick={() => { scrollToSection("about"); setMenuOpen(false); }} isActive={activeSection === "about"}>About</NavLink>
-      <NavLink onClick={() => { scrollToSection("domains"); setMenuOpen(false); }} isActive={activeSection === "domains"}>Domains</NavLink>
-      <NavLink onClick={() => { scrollToSection("timeline"); setMenuOpen(false); }} isActive={activeSection === "timeline"}>Timeline</NavLink>
-      <NavLink onClick={() => { scrollToSection("teams"); setMenuOpen(false); }} isActive={activeSection === "teams"}>Team</NavLink>
-      <NavLink onClick={() => { scrollToSection("sponsors"); setMenuOpen(false); }} isActive={activeSection === "sponsors"}>Sponsors</NavLink>
-      <NavLink onClick={() => { scrollToSection("faq"); setMenuOpen(false); }} isActive={activeSection === "faq"}>FAQ</NavLink>
-      <NavLink onClick={() => { scrollToSection("gallery"); setMenuOpen(false); }} isActive={activeSection === "gallery"}>Gallery</NavLink>
-      <NavLink onClick={() => { scrollToSection("contact"); setMenuOpen(false); }} isActive={activeSection === "contact"}>Contact Us</NavLink>
-    </div>
-  )}
-</header>
+          {/* Mobile Toggle Button */}
+          <button
+            className="md:hidden flex flex-col space-y-1.5 focus:outline-none"
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            <span className="block w-6 h-0.5 bg-green-400"></span>
+            <span className="block w-6 h-0.5 bg-green-400"></span>
+            <span className="block w-6 h-0.5 bg-green-400"></span>
+          </button>
+        </div>
+
+        {/* Mobile Dropdown Menu */}
+        {menuOpen && (
+          <div className="md:hidden bg-black/95 border-t border-green-400 flex flex-col items-center py-6 space-y-4">
+            <NavLink onClick={() => { scrollToSection("home"); setMenuOpen(false); }} isActive={activeSection === "home"}>Home</NavLink>
+            <NavLink onClick={() => scrollToSection("prizepool")} isActive={activeSection === "prizepool"}>Prize Pool</NavLink>
+            <NavLink onClick={() => { scrollToSection("about"); setMenuOpen(false); }} isActive={activeSection === "about"}>About</NavLink>
+            <NavLink onClick={() => { scrollToSection("domains"); setMenuOpen(false); }} isActive={activeSection === "domains"}>Domains</NavLink>
+            <NavLink onClick={() => { scrollToSection("timeline"); setMenuOpen(false); }} isActive={activeSection === "timeline"}>Timeline</NavLink>
+            <NavLink onClick={() => { scrollToSection("teams"); setMenuOpen(false); }} isActive={activeSection === "teams"}>Team</NavLink>
+            <NavLink onClick={() => { scrollToSection("sponsors"); setMenuOpen(false); }} isActive={activeSection === "sponsors"}>Sponsors</NavLink>
+            <NavLink onClick={() => { scrollToSection("faq"); setMenuOpen(false); }} isActive={activeSection === "faq"}>FAQ</NavLink>
+            <NavLink onClick={() => { scrollToSection("gallery"); setMenuOpen(false); }} isActive={activeSection === "gallery"}>Gallery</NavLink>
+            <NavLink onClick={() => { scrollToSection("contact"); setMenuOpen(false); }} isActive={activeSection === "contact"}>Contact Us</NavLink>
+          </div>
+        )}
+      </header>
 
 
       {/* Social Links */}
@@ -1392,15 +1672,15 @@ export default function App() {
         </a>
       </div>
 
-      
+
 
       <main className="relative z-10">
-      
+
         {/* Home Section */}
         <section ref={sectionRefs.home} className="section-slide">
-          <HomeSection />
+          <HomeSection onRegisterClick={() => setIsRegistrationModalOpen(true)} />
         </section>
-        
+
 
         {/* Prize Pool Section */}
         <section ref={sectionRefs.prizepool} className="section-slide">
@@ -1414,7 +1694,7 @@ export default function App() {
 
         {/* Domain Section */}
         <section ref={sectionRefs.domains} className="section-slide">
-          <DomainSection/>
+          <DomainSection />
         </section>
 
         {/* Timeline Section */}
@@ -1441,7 +1721,7 @@ export default function App() {
         <section ref={sectionRefs.gallery} className="section-slide">
           <GallerySection />
         </section>
-        
+
         {/* social Section */}
         <section ref={sectionRefs.home} className="section-slide">
           <SocialLinks />
