@@ -313,32 +313,33 @@ const RegistrationModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () =
 };
 
 const HomeSection = ({ onRegisterClick }: { onRegisterClick: () => void }) => (
-  <div className="min-h-screen flex flex-col items-center justify-center text-center px-3 sm:px-4 py-10">
+  <div id="home" className="min-h-screen flex flex-col items-center justify-center text-center px-3 sm:px-4 py-10">
     <Mascot />
+    <div class="flex flex-col items-center w-full">
+      <p className="font-serif italic text-green-400 font-semibold text-xs xs:text-sm sm:text-base md:text-xl mb-2 tracking-widest uppercase text-center">
+        Association of Computer Engineers
+      </p>
 
+      <p className="font-sans text-green-500 font-light text-xs xs:text-sm sm:text-base md:text-lg mb-6 tracking-widest text-center w-full">
+        PRESENTS
+      </p>
+    </div>
     {/* Title */}
     <h1 className="font-pixel text-2xl xs:text-3xl sm:text-4xl md:text-7xl mb-3 animate-text-glitch leading-snug break-words">
-      &lt;Hackerrupt'25&gt;
+      &lt;Hackerrupt'26&gt;
     </h1>
-    <p className="text-green-400 font-semibold text-xs xs:text-sm sm:text-base md:text-xl mb-2 tracking-wide">
-      By
+
+    <p className="text-purple-400 font-bold mb-2 sm:mb-3 text-lg sm:text-xl md:text-2xl">
+      Date : Jan 31 & Feb 1
     </p>
 
-    <p className="text-green-400 font-semibold text-xs xs:text-sm sm:text-base md:text-xl mb-6 tracking-wide">
-      Association of Computer Engineers, SVCE
-    </p>
-
-    <p className="text-purple-400 font-bold mb-2 sm:mb-3 text-sm sm:text-base">
-      Date : Yet to be Announced
-    </p>
-
-    <p className="text-purple-400 font-bold mb-6 sm:mb-8 text-sm sm:text-base">
-      Venue : Yet to be Announced
+    <p className="text-purple-400 font-bold mb-2 sm:mb-3 text-lg sm:text-xl md:text-2xl">
+      Venue : CodeWorks.Ai, Chennai
     </p>
 
 
     {/* Button */}
-    <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 w-full sm:w-auto">
+    <div className="flex flex-col sm:flex-row gap-6 sm:gap-6 w-full sm:w-auto">
       <button
         onClick={onRegisterClick}
         className="hack-button w-full sm:w-auto px-6 py-3 rounded-xl text-base sm:text-lg font-semibold bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md hover:scale-105 transition-transform duration-300"
@@ -357,7 +358,7 @@ const PrizePoolSection = () => (
       </h2>
 
       <p className="text-lg text-gray-300 mb-12">
-        Hackerrupt’25 offers an exciting prize pool worth over{" "}
+        Hackerrupt’26 offers an exciting prize pool worth over{" "}
         <span className="text-yellow-400 font-bold">Yet to be released</span> along with
         certificates, and exclusive opportunities.
       </p>
@@ -411,9 +412,11 @@ const AboutSection = () => (
             <span className="px-4 py-2 bg-green-600/30 rounded-full text-green-300 border border-green-500">
               Collaboration
             </span>
-            <span className="px-4 py-2 bg-blue-600/30 rounded-full text-blue-300 border border-blue-500">
-              Technology
-            </span>
+            <div className="flex justify-center w-full">
+              <span className="px-4 py-2 bg-blue-600/30 rounded-full text-blue-300 border border-blue-500">
+                Technology
+              </span>
+            </div>
           </div>
         </div>
 
@@ -435,106 +438,7 @@ const AboutSection = () => (
   </div>
 );
 
-// 1. Updated data structure to include a 'problemStatements' array
-const domains = [
-  {
-    title: "AI & Machine Learning",
-    description: "Build intelligent solutions using cutting-edge AI technologies",
-    icon: "🤖",
-    color: "from-purple-600 to-pink-600",
-    problemStatements: [
-      {
-        title: "PS-001: Customer Churn Prediction",
-        description: "Develop a model to predict which customers are most likely to stop using a service, allowing the business to proactively offer incentives."
-      },
-      {
-        title: "PS-002: Real-time Object Detection",
-        description: "Create a system that can identify and track objects in a live video stream for security or autonomous navigation purposes."
-      },
-    ],
-  },
-  {
-    title: "Web3 & Blockchain",
-    description: "Create decentralized applications and smart contracts",
-    icon: "⛓️",
-    color: "from-blue-600 to-cyan-600",
-    problemStatements: [
-      {
-        title: "PS-003: Decentralized Voting System",
-        description: "Build a secure and transparent voting application on the blockchain to prevent fraud and ensure verifiable results."
-      },
-    ],
-  },
-  {
-    title: "Social Impact",
-    description: "Solve real-world problems that matter to communities",
-    icon: "🌍",
-    color: "from-orange-600 to-red-600",
-    problemStatements: [], // Empty array for "Yet to be Released"
-  },
-  // ... add other domains similarly
-];
-const ProblemStatementModal = ({ domain, onClose }) => {
-  const [activeProblemIndex, setActiveProblemIndex] = useState(null);
 
-  if (!domain) return null;
-
-  const handleProblemClick = (index) => {
-    // If the same problem is clicked again, close it. Otherwise, open the new one.
-    setActiveProblemIndex(activeProblemIndex === index ? null : index);
-  };
-
-  return (
-    // Modal Backdrop
-    <div
-      className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50"
-      onClick={onClose} // Close modal if backdrop is clicked
-    >
-      {/* Modal Content */}
-      <div
-        className="bg-gray-800 text-white rounded-lg shadow-xl w-11/12 md:w-3/4 lg:w-1/2 max-h-[80vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside the modal
-      >
-        <div className="p-6 border-b border-gray-700 flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-green-400">{domain.title}</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-white text-2xl">&times;</button>
-        </div>
-
-        <div className="p-6">
-          {domain.problemStatements && domain.problemStatements.length > 0 ? (
-            <table className="w-full text-left">
-              <thead className="border-b border-gray-600">
-                <tr>
-                  <th className="p-3">Problem Statement</th>
-                </tr>
-              </thead>
-              <tbody>
-                {domain.problemStatements.map((ps, index) => (
-                  <>
-                    <tr
-                      key={ps.title}
-                      className="cursor-pointer hover:bg-gray-700 border-b border-gray-700"
-                      onClick={() => handleProblemClick(index)}
-                    >
-                      <td className="p-4 font-semibold">{ps.title}</td>
-                    </tr>
-                    {activeProblemIndex === index && (
-                      <tr className="bg-gray-900">
-                        <td className="p-4 text-gray-300">{ps.description}</td>
-                      </tr>
-                    )}
-                  </>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <p className="text-center text-gray-400 py-8">Problem Statements are yet to be released. Stay tuned!</p>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
 function SocialLinks() {
   return (
     <div
@@ -625,7 +529,7 @@ const DomainSection = () => {
       title: "AI & Machine Learning",
       description: "Build intelligent solutions using cutting-edge AI technologies",
       icon: "🤖",
-      color: "from-purple-600 to-pink-600",
+      borderColor: "border-green-500",
       problemStatements: [
         { title: "PS-001: Yet to be released", description: "Yet to be released" },
         { title: "PS-002: Yet to be released", description: "Yet to be released" },
@@ -635,7 +539,7 @@ const DomainSection = () => {
       title: "Web3 & Blockchain",
       description: "Create decentralized applications and smart contracts",
       icon: "⛓️",
-      color: "from-blue-600 to-cyan-600",
+      borderColor: "border-purple-500",
       problemStatements: [
         { title: "PS-003: Yet to be released", description: "Yet to be released" },
       ],
@@ -644,15 +548,15 @@ const DomainSection = () => {
       title: "Social Impact",
       description: "Solve real-world problems that matter to communities",
       icon: "🌍",
-      color: "from-orange-600 to-red-600",
-      problemStatements: [], // Empty array for "Yet to be Released"
+      borderColor: "border-blue-500",
+      problemStatements: [], 
     },
     {
       title: "Cybersecurity",
       description: "Solve Problems related to digital security and data protection",
       icon: "🛡️",
-      color: "from-orange-600 to-red-600",
-      problemStatements: [], // Empty array for "Yet to be Released"
+      borderColor: "border-cyan-500",
+      problemStatements: [],
     },
   ];
 
@@ -667,21 +571,23 @@ const DomainSection = () => {
   };
 
   return (
-    <>
-      <div className="min-h-screen flex flex-col items-center justify-center px-4 py-20">
-        <div className="max-w-7xl mx-auto w-full">
-          <h2 className="font-pixel text-3xl md:text-5xl mb-12 text-center text-green-400 animate-slide-in-down">
-            Domains
-          </h2>
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-20">
+      <div className="max-w-7xl mx-auto w-full">
+        <h2 className="font-pixel text-3xl md:text-5xl mb-12 text-center text-green-400 animate-slide-in-down">
+          Domains
+        </h2>
 
+        {/* This wrapper div creates the 2-column grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
           {domains.map((domain, index) => (
             <div
               key={domain.title}
-              className="h-64 w-full cursor-pointer mb-6"
+              className="h-64 cursor-pointer"
               style={{ animation: `slide-in-up 0.5s ease-out ${index * 100}ms backwards` }}
               onClick={() => handleCardClick(domain)}
             >
-              <div className="h-full w-full p-6 bg-black/40 backdrop-blur-sm border border-gray-700 rounded-lg flex flex-col justify-center items-center hover:bg-black/60 transition-colors">
+              {/* Changed border-gray-700 to border-2 and dynamic borderColor */}
+              <div className={`h-full w-full p-6 bg-black/40 backdrop-blur-sm border-2 ${domain.borderColor} rounded-xl flex flex-col justify-center items-center hover:bg-black/60 transition-all duration-300 hover:scale-[1.02]`}>
                 <div className="text-4xl mb-4">{domain.icon}</div>
                 <h3 className="font-bold text-xl mb-3 text-green-300 text-center">
                   {domain.title}
@@ -693,16 +599,14 @@ const DomainSection = () => {
             </div>
           ))}
         </div>
-
-        {isModalOpen && (
-          <ProblemStatementModal domain={selectedDomain} onClose={handleCloseModal} />
-        )}
       </div>
-    </>
+
+      {isModalOpen && (
+        <ProblemStatementModal domain={selectedDomain} onClose={handleCloseModal} />
+      )}
+    </div>
   );
 };
-
-
 
 const TimelineSection = () => (
   <div className="min-h-screen flex flex-col items-center justify-center px-4 py-20">
@@ -810,7 +714,7 @@ const TeamsSection = () => {
       },
 
       {
-        name: "Sarvesh Raghav B",
+        name: "Sarvesh Ragav B",
         role: "Operations Head",
         image: "/raghav1.png",
 
@@ -844,7 +748,7 @@ const TeamsSection = () => {
 
       },
       {
-        name: "Shrinithi Dasarathy",
+        name: "Shrinidhi Dasarathy",
         role: "Executive Associative",
         image: "/shrinithi.png",
 
@@ -986,10 +890,10 @@ const TeamsSection = () => {
 
       },
     ],
-    "Marketting And Outreach Team": [
+    "Marketing And Outreach Team": [
       {
         name: "Shashank N S",
-        role: "Marketting Team Head",
+        role: "Marketing Team Head",
         image: "/shashank.png",
 
       },
@@ -1001,19 +905,19 @@ const TeamsSection = () => {
       },
       {
         name: "Priyanka A",
-        role: "Marketting Team Member",
+        role: "Marketing Team Member",
         image: "/priyanka.png",
 
       },
       {
         name: "Sharmila M",
-        role: "Marketting Team Member",
+        role: "Marketing Team Member",
         image: "/sharmila.png",
 
       },
       {
         name: "Bhavana G",
-        role: "Marketting Team Member",
+        role: "Marketing Team Member",
         image: "/bhavana.png",
 
       },
@@ -1040,6 +944,12 @@ const TeamsSection = () => {
         image: "/srini.jpeg",
 
       },
+      {
+        name: "MR.R. Gnanavel",
+        role: "Faculty Coordinator",
+        image: "/vel.jpg",
+
+      }
 
     ],
   }
@@ -1156,24 +1066,24 @@ const SponsorsSection: React.FC = () => {
 const FAQSection = () => {
   const faqs = [
     {
-      question: "What is Hackerrupt '25?",
+      question: "What is Hackerrupt '26?",
       answer:
-        "Hackerrupt '25 is a premier hackathon event where developers, designers, and innovators come together to build amazing solutions in 24 hours. It's a platform to showcase your skills, learn new technologies, and network with like-minded individuals.",
+        "Hackerrupt '26 is a premier hackathon event where developers, designers, and innovators come together to build amazing solutions in 24 hours. It's a platform to showcase your skills, learn new technologies, and network with like-minded individuals.",
     },
     {
-      question: "Who can participate in  Hackerrupt '25?",
+      question: "Who can participate in  Hackerrupt '26?",
       answer:
-        "Hackerrupt '25 is open to all students, professionals, and tech enthusiasts. Whether you're a beginner or an expert, everyone is welcome to participate and contribute their unique skills to create innovative solutions.",
+        "Hackerrupt '26 is open to all students, professionals, and tech enthusiasts. Whether you're a beginner or an expert, everyone is welcome to participate and contribute their unique skills to create innovative solutions.",
     },
     {
       question: "How many members can be in a team?",
       answer:
-        "Teams can have a minimum of 2 members and a maximum of 4 members. You can form teams with your friends or join other participants during the team formation session at the event.",
+        "Teams can have a minimum of 3 members and a maximum of 4 members. You can form teams with your friends or join other participants during the team formation session at the event.",
     },
     {
-      question: "What is the format of  Hackerrupt '25?",
+      question: "What is the format of  Hackerrupt '26?",
       answer:
-        "Hackerrupt '25 is a 24-hour hackathon where teams work on building solutions for various problem statements. The event includes mentorship sessions, workshops, networking opportunities, and ends with project presentations and awards.",
+        "Hackerrupt '26 is a 24-hour hackathon where teams work on building solutions for various problem statements. The event includes mentorship sessions, workshops, networking opportunities, and ends with project presentations and awards.",
     },
     {
       question: "What are the prizes for the winners?",
@@ -1188,7 +1098,7 @@ const FAQSection = () => {
     {
       question: "What is the prize pool?",
       answer:
-        "Hackerrupt '25 offers a grand prize pool worth over ₹30,000, along with exclusive goodies, internship opportunities, and certificates for top-performing teams.",
+        "Hackerrupt '26 offers a grand prize pool worth over ₹50,000, along with exclusive goodies, internship opportunities, and certificates for top-performing teams.",
     },
   ]
 
@@ -1223,7 +1133,7 @@ const GallerySection = () => {
     "/gallery1.jpg",
     "/gallery2.jpg",
     "/gallery3.jpg",
-    "/gallery4.jpg",
+    "/gallery4.JPG",
     "/gallery5.jpg",
   ];
 
@@ -1312,9 +1222,9 @@ const ContactSection = () => {
         {/* Column 1: Branding */}
         <div className="pl-6 md:pl-12">
           <h2 className="text-2xl font-bold bg-gradient-to-r from-green-400 to-purple-500 bg-clip-text text-transparent">
-            Hackerrupt '25
+            Hackerrupt '26
           </h2>
-          <p className="mt-2">International Hackathon</p>
+          <p className="mt-2">National Hackathon</p>
 
           {/* Contact Us section */}
           <div className="mt-4 text-gray-300">
@@ -1361,29 +1271,17 @@ const ContactSection = () => {
           <p>
             Sri Venkateswara College Of Engineering, <br />
             Sriperumbudur,Kanchipuram dt. <br />
-            Chennai, Tamil Nadu – 600123
+            Chennai, Tamil Nadu – 602117
           </p>
-
-          <h3 className="text-green-400 font-semibold mt-6 mb-2">Branding Guidelines</h3>
-          <a href="#" className="text-white-400 hover:underline">
-            SVCE Branding
-          </a>
         </div>
 
-        {/* Column 3: Links */}
-        <div>
-          <h3 className="text-green-400 font-semibold mb-4">Additional Links</h3>
-          <ul className="space-y-2">
-            <li><a href="https://ace-interrupt.netlify.app/home" className="hover:text-green-400">ACE website</a></li>
-            <li><a href="https://www.svce.ac.in/" className="hover:text-green-400">SVCE website</a></li>
-          </ul>
-        </div>
+
 
         {/* Column 4: Map */}
         <div>
           <h3 className="text-green-400 font-semibold mb-4">Location</h3>
           <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3887.4372901100777!2d79.94934537417062!3d12.959889387352392!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a528cfa7c3a2b13%3A0xf4766f6f43c5a1d2!2sSri%20Venkateswara%20College%20of%20Engineering!5e0!3m2!1sen!2sin!4v1726847000000!5m2!1sen!2sin"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3983866.958528665!2d75.35080331249998!3d12.811252999999997!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a525bb3b947d67b%3A0x70b4aca914cf37cc!2sCODEWORK%20Pvt%20Ltd!5e0!3m2!1sen!2sin!4v1767936006104!5m2!1sen!2sin"
             width="100%"
             height="220"
             style={{ border: 0 }}
@@ -1395,7 +1293,7 @@ const ContactSection = () => {
 
       {/* Bottom copyright */}
       <div className="text-center text-sm text-gray-500 mt-12 border-t border-gray-700 pt-6">
-        © 2025 Hackerrupt'25. All rights reserved.
+        © 2025 HACKERRUPT '26.
       </div>
     </footer>
   )
@@ -1587,7 +1485,7 @@ export default function App() {
         <div className="container mx-auto flex justify-between items-center bg-black/20 backdrop-blur-sm border-t-2 border-green-400 py-2 px-4">
 
           {/* Logo */}
-          <div className="text-lg font-bold text-green-400">Hackerrupt'25</div>
+          <div className="text-lg font-bold text-green-400">HACKERRUPT '26</div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-4 text-sm sm:text-base">
@@ -1633,38 +1531,35 @@ export default function App() {
 
 
       {/* Social Links */}
-      <div className="fixed left-4 bottom-4 z-20 hidden md:flex flex-col items-center space-y-4">
-        <span className="writing-mode-vertical-rl rotate-180 uppercase text-xs tracking-widest">Follow us on</span>
-        <div className="w-px h-16 bg-green-400"></div>
+      <div className="
+    /* --- Mobile styles (Default) --- */
+    fixed bottom-0 inset-x-0 z-20
+    flex flex-row justify-center items-center
+    space-x-8 p-3 bg-black bg-opacity-75 backdrop-blur-sm
+
+    /* --- Desktop styles (Applied at the 'md' breakpoint and up) --- */
+    md:inset-auto md:left-4 md:bottom-4
+    md:flex-col md:space-y-4 md:space-x-0
+    md:p-0 md:bg-transparent md:backdrop-blur-none"
+      >
+        {/* This text and divider line are hidden on mobile */}
+        <span className="hidden md:block writing-mode-vertical-rl rotate-180 uppercase text-xs tracking-widest">
+          Follow us on
+        </span>
+        <div className="hidden md:block w-px h-16 bg-green-400"></div>
+
+        {/* Instagram Icon */}
         <a href="https://www.instagram.com/acesvce?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" className="hover:text-green-300 transition-colors">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
             <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
             <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
           </svg>
         </a>
+
+        {/* LinkedIn Icon */}
         <a href="https://www.linkedin.com/company/ace-svce/" className="hover:text-green-300 transition-colors">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
             <rect x="2" y="9" width="4" height="12"></rect>
             <circle cx="4" cy="4" r="2"></circle>
@@ -1722,188 +1617,12 @@ export default function App() {
           <GallerySection />
         </section>
 
-        {/* social Section */}
-        <section ref={sectionRefs.home} className="section-slide">
-          <SocialLinks />
-        </section>
-
         {/* Contact Section */}
         <section ref={sectionRefs.contact} className="section-slide">
           <ContactSection />
         </section>
       </main>
 
-      <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto+Mono:wght@400;700&display=swap');
-                
-                .font-pixel {
-                    font-family: 'Press Start 2P', cursive;
-                }
-                .font-sans {
-                    font-family: 'Roboto Mono', monospace;
-                }
-                .writing-mode-vertical-rl {
-                    writing-mode: vertical-rl;
-                }
-                
-                .hack-button {
-                    position: relative;
-                    padding: 1rem 2.5rem;
-                    color: white;
-                    font-weight: bold;
-                    text-transform: uppercase;
-                    letter-spacing: 1px;
-                    border: none;
-                    clip-path: polygon(0% 0%, 100% 0%, 92% 50%, 100% 100%, 0% 100%, 8% 50%);
-                    transition: transform 0.2s ease, filter 0.3s ease;
-                }
-                .hack-button:hover {
-                    transform: scale(1.05);
-                    filter: brightness(1.2);
-                }
-                .hack-button span {
-                    position: relative;
-                    z-index: 1;
-                }
-
-                /* Added section slide animations */
-                .section-slide {
-                    opacity: 0;
-                    transform: translateY(50px);
-                    animation: slideInSection 0.8s ease-out forwards;
-                }
-
-                @keyframes slideInSection {
-                    to {
-                        opacity: 1;
-                        transform: translateY(0);
-                    }
-                }
-
-                @keyframes slide-in-down {
-                    from {
-                        opacity: 0;
-                        transform: translateY(-30px);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: translateY(0);
-                    }
-                }
-
-                @keyframes slide-in-left {
-                    from {
-                        opacity: 0;
-                        transform: translateX(-30px);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: translateX(0);
-                    }
-                }
-
-                @keyframes slide-in-right {
-                    from {
-                        opacity: 0;
-                        transform: translateX(30px);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: translateX(0);
-                    }
-                }
-
-                @keyframes slide-in-up {
-                    from {
-                        opacity: 0;
-                        transform: translateY(30px);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: translateY(0);
-                    }
-                }
-
-                .animate-slide-in-down {
-                    animation: slide-in-down 0.6s ease-out forwards;
-                }
-
-                .animate-slide-in-left {
-                    animation: slide-in-left 0.6s ease-out forwards;
-                }
-
-                .animate-slide-in-right {
-                    animation: slide-in-right 0.6s ease-out forwards;
-                }
-
-                .animate-slide-in-up {
-                    animation: slide-in-up 0.6s ease-out forwards;
-                }
-
-                @keyframes bob {
-                    0%, 100% { transform: translateY(0); }
-                    50% { transform: translateY(-15px); }
-                }
-                .animate-bob {
-                    animation: bob 4s ease-in-out infinite;
-                }
-
-                .text-shadow-glow {
-                    text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #f09, 0 0 20px #f09, 0 0 25px #f09, 0 0 30px #f09, 0 0 35px #f09;
-                }
-                
-                @keyframes text-glitch-anim {
-                    0% {
-                        text-shadow: 0.05em 0 0 rgba(180, 0, 255, 0.75), -0.05em 0 0 rgba(0, 255, 255, 0.75), 0 0.025em 0 rgba(255, 230, 0, 0.75);
-                    }
-                    15% {
-                         text-shadow: 0.05em 0 0 rgba(180, 0, 255, 0.75), -0.05em 0 0 rgba(0, 255, 255, 0.75), 0 -0.05em 0 rgba(255, 230, 0, 0.75);
-                    }
-                    16% {
-                         text-shadow: -0.05em 0 0 rgba(180, 0, 255, 0.75), 0.025em 0 0 rgba(0, 255, 255, 0.75), 0 0.05em 0 rgba(255, 230, 0, 0.75);
-                    }
-                    50% {
-                         text-shadow: -0.05em 0 0 rgba(180, 0, 255, 0.75), 0.025em 0 0 rgba(0, 255, 255, 0.75), 0 -0.025em 0 rgba(255, 230, 0, 0.75);
-                    }
-                     100% {
-                         text-shadow: -0.025em 0 0 rgba(180, 0, 255, 0.75), -0.025em 0 0 rgba(0, 255, 255, 0.75), -0.025em -0.025em 0 rgba(255, 230, 0, 0.75);
-                    }
-                }
-                .animate-text-glitch {
-                    color: #f0f0f0;
-                    animation: text-glitch-anim 3s infinite linear alternate;
-                }
-
-                @keyframes glow {
-                    from { filter: hue-rotate(0deg); }
-                    to { filter: hue-rotate(360deg); }
-                }
-                .animate-glow {
-                    animation: glow 5s linear infinite;
-                }
-                    theme: {
-    extend: {
-      keyframes: {
-        bob: {
-          '0%, 100%': { transform: 'translateY(-6%)' },
-          '50%': { transform: 'translateY(6%)' },
-        },
-        // Tailwind's default pulse is usually fine,
-        // but defining it here ensures it works.
-        pulse: {
-          '50%': { opacity: '.5' },
-        }
-      },
-      animation: {
-        bob: 'bob 4s ease-in-out infinite',
-        pulse: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-      },
-    },
-  },
-  plugins: [],
-  
-
-            `}</style>
     </div>
   )
 }
