@@ -351,38 +351,45 @@ const HomeSection = ({ onRegisterClick }: { onRegisterClick: () => void }) => (
 );
 
 const PrizePoolSection = () => (
-  <div className="min-h-screen flex flex-col items-center justify-center text-center px-4 py-20">
-    <div className="max-w-4xl mx-auto">
-      <h2 className="font-pixel text-3xl md:text-5xl mb-12 text-green-400 animate-slide-in-down">
-        Prize Pool
+  <div className="min-h-screen flex flex-col items-center justify-center text-center px-4 py-20 relative overflow-hidden">
+    {/* Background Glow Effect */}
+    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-green-500/10 blur-[120px] rounded-full pointer-events-none" />
+
+    <div className="max-w-5xl mx-auto relative z-10">
+      <h2 className="font-pixel text-2xl md:text-3xl mb-16 text-gray-400 tracking-widest uppercase">
+        PRIZE POOL
       </h2>
 
-      <p className="text-lg text-gray-300 mb-12">
-        Hackerrupt’26 offers an exciting prize pool worth over{" "}
-        <span className="text-yellow-400 font-bold">Yet to be released</span> along with
-        certificates, and exclusive opportunities.
-      </p>
-
-      {/* Prize Grid */}
-      <div className="grid md:grid-cols-3 gap-8">
-        <div className="bg-black/50 border border-green-500 rounded-xl p-6 hover:scale-105 transition-transform duration-300">
-          <div className="text-5xl mb-4">🥇</div>
-          <h3 className="text-xl font-bold text-green-300 mb-2">1st Place</h3>
-          <p className="text-gray-300">Yet to be released</p>
+      {/* Huge Text Container */}
+      <div className="flex flex-col items-center animate-slide-in-down space-y-4">
+        
+        {/* The Big Number */}
+        <div className="relative">
+            <h1 className="font-pixel text-8xl md:text-[10rem] leading-none font-extrabold text-transparent bg-clip-text bg-gradient-to-b from-yellow-300 via-yellow-500 to-yellow-700 drop-shadow-[0_0_25px_rgba(234,179,8,0.5)]">
+            50K+
+            </h1>
         </div>
 
-        <div className="bg-black/50 border border-purple-500 rounded-xl p-6 hover:scale-105 transition-transform duration-300">
-          <div className="text-5xl mb-4">🥈</div>
-          <h3 className="text-xl font-bold text-purple-300 mb-2">2nd Place</h3>
-          <p className="text-gray-300">Yet to be released</p>
-        </div>
+        {/* Cash Prize Text */}
+        <h2 className="text-4xl md:text-7xl font-bold text-green-400 font-pixel tracking-wide drop-shadow-[0_0_15px_rgba(74,222,128,0.5)]">
+          CASH PRIZE
+        </h2>
 
-        <div className="bg-black/50 border border-blue-500 rounded-xl p-6 hover:scale-105 transition-transform duration-300">
-          <div className="text-5xl mb-4">🥉</div>
-          <h3 className="text-xl font-bold text-blue-300 mb-2">3rd Place</h3>
-          <p className="text-gray-300">Yet to be released</p>
+        {/* Divider */}
+        <div className="w-24 h-1 bg-gray-600 my-6 rounded-full" />
+
+        {/* Internship Text */}
+        <div className="flex flex-col md:flex-row items-center justify-center gap-3 text-2xl md:text-4xl text-blue-300 font-semibold">
+          <span className="text-white opacity-80">&</span>
+          <span className="bg-blue-500/10 border border-blue-500/50 px-6 py-2 rounded-lg backdrop-blur-sm shadow-[0_0_15px_rgba(59,130,246,0.3)]">
+            Internship Opportunities
+          </span>
         </div>
       </div>
+
+      <p className="mt-16 text-lg text-gray-400 max-w-2xl mx-auto">
+        Compete for the grand prize and unlock exclusive career opportunities with our hiring partners.
+      </p>
     </div>
   </div>
 );
