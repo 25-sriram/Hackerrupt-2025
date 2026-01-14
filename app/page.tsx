@@ -562,16 +562,16 @@ const PrizePoolSection = () => {
                 <polygon points="130,20 240,200 20,200" fill="url(#triangleGradient)" stroke="#facc15" strokeWidth="4" />
               </svg>
               <div className="relative z-10 flex flex-col items-center justify-center mt-6">
-                <h3 className="text-5xl font-black text-white/90 drop-shadow-2xl animate-pulse mb-1">50K+</h3>
-                <p className="text-sm font-bold text-yellow-400 tracking-widest uppercase">INR Cash Prize</p>
+                <h3 className="text-5xl font-black text-white/90 drop-shadow-2xl animate-pulse mb-1">100K+</h3>
+                <p className="text-sm font-bold text-yellow-400 tracking-widest uppercase">WORTH OF</p>
               </div>
             </div>
           </div>
 
           {/* Orbiting Hexagons */}
           <Hex label="INTERNSHIPS" show={show} delay="0ms" pos="top-left" />
-          <Hex label="NETWORKING" show={show} delay="120ms" pos="top-right" />
-          <Hex label="MENTORSHIPS" show={show} delay="240ms" pos="bottom" />
+          <Hex label="NETWORKING & MENTORSHIPS" show={show} delay="120ms" pos="top-right" />
+          <Hex label="PRIZES" show={show} delay="240ms" pos="bottom" />
         </div>
       </div>
     </section>
